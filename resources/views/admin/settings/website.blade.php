@@ -22,11 +22,11 @@
                             <img src="{{ $settings['logo_path'] }}" id="logo-preview" class="rounded border p-1 bg-light mb-2" style="max-height: 45px; max-width: 100%; object-fit: contain;">
                             <input type="file" name="logo" class="form-control form-control-sm" accept="image/*">
                         </div>
-                        
+
                         <hr class="border-secondary border-opacity-10 my-3">
-                        
+
                         <h6 class="fw-bold font-outfit text-danger mb-0">Informasi Kontak & Media Sosial</h6>
-                        
+
                         <div class="col-md-4">
                             <label for="fb_url" class="form-label small fw-semibold">URL Facebook</label>
                             <input type="url" name="facebook_url" id="fb_url" class="form-control form-control-sm" value="{{ $settings['facebook_url'] }}" placeholder="https://facebook.com/name">
@@ -60,7 +60,7 @@
                             <textarea name="about_us" id="about_us" class="form-control" rows="5" required>{{ $settings['about_us'] }}</textarea>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-danger btn-sm px-4 py-2 mt-4 font-outfit fw-bold w-100" id="btn-save-website">Simpan Perubahan Konten</button>
                 </form>
             </div>
@@ -135,8 +135,8 @@
             success: function(cities) {
                 let options = '<option value="">Pilih Kota Asal</option>';
                 cities.forEach(city => {
-                    const selected = activeCityId && activeCityId == city.city_id ? 'selected' : '';
-                    options += `<option value="${city.city_id}" ${selected}>${city.type} ${city.city_name}</option>`;
+                    const selected = activeCityId && activeCityId == city.id ? 'selected' : '';
+                    options += `<option value="${city.id}" ${selected}> ${city.name}</option>`;
                 });
                 citySelect.html(options).prop('disabled', false);
             },

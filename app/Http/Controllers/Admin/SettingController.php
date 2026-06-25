@@ -111,17 +111,17 @@ class SettingController extends Controller
         try {
             $response = \Illuminate\Support\Facades\Http::withHeaders([
                 'key' => $apiKey
-            ])->get('https://api.rajaongkir.com/starter/province');
+            ])->get('https://rajaongkir.komerce.id/api/v1/destination/province');
 
             if ($response->successful()) {
-                $provinces = $response->json()['rajaongkir']['results'] ?? [];
+                $provinces = $response->json()['data'] ?? [];
             }
         } catch (\Exception $e) {}
 
         if (empty($provinces)) {
             $provinces = [
-                ['province_id' => 9, 'province' => 'Jawa Barat'],
-                ['province_id' => 11, 'province' => 'Jawa Timur'],
+                ['id' => 9, 'name' => 'Jawa Barat'],
+                ['id' => 11, 'name' => 'Jawa Timur'],
             ];
         }
 
