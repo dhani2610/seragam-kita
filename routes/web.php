@@ -40,7 +40,7 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 // Customer Protected routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/cost', [CheckoutController::class, 'checkCost']);
+    Route::get('/checkout/cost', [CheckoutController::class, 'checkCost']);
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'showPayment'])->name('checkout.payment');
     Route::post('/checkout/payment/{order}/simulate', [CheckoutController::class, 'simulatePaymentSuccess']);
@@ -52,9 +52,9 @@ Route::middleware(['auth'])->group(function () {
 // Admin Protected routes (using role check middleware or inline closure)
 Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->group(function () {
-        
+
         Route::middleware(['admin'])->group(function () {
-            
+
             // Dashboard
             Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('admin.dashboard');
 
@@ -80,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/orders/data', [AdminOrder::class, 'orderData']);
             Route::get('/orders/show/{id}', [AdminOrder::class, 'show']);
             Route::post('/orders/status/{id}', [AdminOrder::class, 'updateStatus']);
-            
+
             // Reports & Sales
             Route::get('/reports', [AdminOrder::class, 'reports'])->name('admin.reports');
             Route::get('/reports/data', [AdminOrder::class, 'reportData']);

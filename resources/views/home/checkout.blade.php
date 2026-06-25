@@ -12,14 +12,14 @@
                 <!-- Address Section -->
                 <div class="card premium-card border p-4 mb-4">
                     <h5 class="font-outfit fw-bold text-danger mb-4 border-bottom pb-2"><i class="fa-solid fa-location-dot me-2"></i> Alamat Pengiriman</h5>
-                    
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="province_select" class="form-label small fw-semibold">Provinsi</label>
                             <select name="province_id" id="province_select" class="form-select" required>
                                 <option value="">Pilih Provinsi</option>
                                 @foreach($provinces as $prov)
-                                    <option value="{{ $prov['province_id'] }}" {{ $user->province_id == $prov['province_id'] ? 'selected' : '' }}>{{ $prov['province'] }}</option>
+                                    <option value="{{ $prov['id'] }}" {{ $user->province_id == $prov['id'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
                                 @endforeach
                             </select>
                             <input type="hidden" name="province" id="province_name" value="{{ $user->province }}">
@@ -43,7 +43,7 @@
                 <!-- Courier Section -->
                 <div class="card premium-card border p-4 mb-4">
                     <h5 class="font-outfit fw-bold text-danger mb-4 border-bottom pb-2"><i class="fa-solid fa-truck me-2"></i> Opsi Pengiriman (RajaOngkir)</h5>
-                    
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="courier_select" class="form-label small fw-semibold">Pilih Kurir Ekspedisi</label>
@@ -54,7 +54,7 @@
                                 <option value="pos">POS Indonesia</option>
                             </select>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <label for="service_select" class="form-label small fw-semibold">Layanan Pengiriman</label>
                             <select name="service" id="service_select" class="form-select" disabled required>
@@ -162,7 +162,7 @@
         const provinceId = $(this).val();
         const provinceText = $(this).find('option:selected').text();
         $('#province_name').val(provinceText);
-        
+
         loadCities(provinceId, null);
         resetShipping();
     });
@@ -194,10 +194,10 @@
         if (courier) {
             serviceSelect.prop('disabled', true).html('<option value="">-- Pilih Layanan --</option>');
             $('#shipping-loader').removeClass('d-none');
-            
+
             $.ajax({
                 url: '/checkout/cost',
-                type: 'POST',
+                type: 'GET',
                 data: {
                     destination: destination,
                     weight: weight,
@@ -205,11 +205,13 @@
                 },
                 success: function(response) {
                     $('#shipping-loader').addClass('d-none');
-                    if (response.success && response.costs.length > 0) {
+                    if (response.success && response.costs && response.costs.length > 0) {
                         let options = '<option value="">-- Pilih Layanan --</option>';
                         response.costs.forEach(cost => {
-                            const val = cost.cost[0].value;
-                            const etd = cost.cost[0].etd;
+                            // PENYESUAIAN DI SINI: Sesuaikan dengan struktur JSON Komerce
+                            const val = cost.cost;
+                            const etd = cost.etd;
+
                             options += `<option value="${cost.service}" data-cost="${val}">${cost.service} (${cost.description}) - Rp ${new Intl.NumberFormat('id-ID').format(val)} [${etd}]</option>`;
                         });
                         serviceSelect.html(options).prop('disabled', false);
@@ -236,7 +238,7 @@
             // Update Summary cost & grand total
             $('#shipping_cost_val').val(cost);
             $('#summary-ongkir').text('Rp ' + new Intl.NumberFormat('id-ID').format(cost));
-            
+
             const grandTotal = subtotal + cost;
             $('#summary-grand-total').text('Rp ' + new Intl.NumberFormat('id-ID').format(grandTotal));
 
@@ -260,8 +262,8 @@
             success: function(cities) {
                 let options = '<option value="">Pilih Kota / Kabupaten</option>';
                 cities.forEach(city => {
-                    const selected = activeCityId && activeCityId == city.city_id ? 'selected' : '';
-                    options += `<option value="${city.city_id}" data-postal="${city.postal_code}" ${selected}>${city.type} ${city.city_name}</option>`;
+                    const selected = activeCityId && activeCityId == city.id ? 'selected' : '';
+                    options += `<option value="${city.id}" ${selected}> ${city.name}</option>`;
                 });
                 citySelect.html(options).prop('disabled', false);
             },
@@ -310,7 +312,7 @@
             error: function(xhr) {
                 btn.prop('disabled', false);
                 spinner.addClass('d-none');
-                
+
                 let errMsg = 'Terjadi kesalahan saat memproses pesanan.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errMsg = xhr.responseJSON.message;

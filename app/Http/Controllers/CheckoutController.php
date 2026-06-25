@@ -22,22 +22,22 @@ class CheckoutController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Fetch Provinces for Checkout
         $provinces = [];
         $apiKey = Setting::getValue('rajaongkir_api_key', env('RAJAONGKIR_API_KEY'));
         try {
             $response = Http::withHeaders(['key' => $apiKey])
-                ->get('https://api.rajaongkir.com/starter/province');
+                ->get('https://rajaongkir.komerce.id/api/v1/destination/province');
             if ($response->successful()) {
-                $provinces = $response->json()['rajaongkir']['results'] ?? [];
+                $provinces = $response->json()['data'] ?? [];
             }
         } catch (\Exception $e) {}
 
         if (empty($provinces)) {
             $provinces = [
-                ['province_id' => 9, 'province' => 'Jawa Barat'],
-                ['province_id' => 11, 'province' => 'Jawa Timur'],
+                ['id' => 9, 'name' => 'Jawa Barat'],
+                ['id' => 11, 'name' => 'Jawa Timur'],
             ];
         }
 
@@ -57,15 +57,17 @@ class CheckoutController extends Controller
 
         try {
             $response = Http::withHeaders(['key' => $apiKey])
-                ->post('https://api.rajaongkir.com/starter/cost', [
+                ->asForm() // <--- TAMBAHKAN INI
+                ->post('https://rajaongkir.komerce.id/api/v1/calculate/district/domestic-cost', [
                     'origin' => $origin,
                     'destination' => $request->destination,
                     'weight' => $request->weight,
                     'courier' => $request->courier,
                 ]);
 
+
             if ($response->successful()) {
-                $costs = $response->json()['rajaongkir']['results'][0]['costs'] ?? [];
+                $costs = $response->json()['data'] ?? [];
                 return response()->json([
                     'success' => true,
                     'costs' => $costs
@@ -125,7 +127,7 @@ class CheckoutController extends Controller
 
         // Create Order
         $invoice = 'INV-' . strtoupper(Str::random(10));
-        
+
         $order = Order::create([
             'invoice_number' => $invoice,
             'user_id' => Auth::id(),

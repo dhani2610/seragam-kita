@@ -18,7 +18,7 @@
                             <!-- Left Column -->
                             <div class="col-md-6">
                                 <h5 class="font-outfit text-danger mb-3 pb-2 border-bottom">Informasi Dasar</h5>
-                                
+
                                 <div class="mb-3">
                                     <label for="name" class="form-label small fw-semibold">Nama Lengkap</label>
                                     <input type="text" name="name" class="form-control" placeholder="Nama Lengkap Anda" required>
@@ -61,7 +61,7 @@
                                     <select name="province_id" id="province_select" class="form-select" required>
                                         <option value="">Pilih Provinsi</option>
                                         @foreach($provinces as $prov)
-                                            <option value="{{ $prov['province_id'] }}">{{ $prov['province'] }}</option>
+                                            <option value="{{ $prov['id'] }}">{{ $prov['name'] }}</option>
                                         @endforeach
                                     </select>
                                     <input type="hidden" name="province_name" id="province_name">
@@ -112,17 +112,17 @@
         $('#province_name').val(provinceText);
 
         const citySelect = $('#city_select');
-        
+
         if (provinceId) {
             citySelect.prop('disabled', true).html('<option value="">Memuat kota...</option>');
-            
+
             $.ajax({
                 url: `/cities/${provinceId}`,
                 type: 'GET',
                 success: function(cities) {
                     let options = '<option value="">Pilih Kota / Kabupaten</option>';
                     cities.forEach(city => {
-                        options += `<option value="${city.city_id}" data-postal="${city.postal_code}">${city.type} ${city.city_name}</option>`;
+                        options += `<option value="${city.id}" data-postal="">${city.name}</option>`;
                     });
                     citySelect.html(options).prop('disabled', false);
                 },
@@ -154,7 +154,7 @@
 
         const btn = $('#btn-register');
         const spinner = btn.find('.spinner-border');
-        
+
         btn.prop('disabled', true);
         spinner.removeClass('d-none');
 

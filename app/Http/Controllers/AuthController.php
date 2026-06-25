@@ -58,24 +58,25 @@ class AuthController extends Controller
         // We can fetch provinces for registration dropdown from RajaOngkir
         $provinces = [];
         $apiKey = env('RAJAONGKIR_API_KEY');
-        
+
         // Native HTTP call to RajaOngkir
         try {
             $response = Http::withHeaders([
                 'key' => $apiKey
-            ])->get('https://api.rajaongkir.com/starter/province');
+            ])->get('https://rajaongkir.komerce.id/api/v1/destination/province');
 
+            // dd($response->json());
             if ($response->successful()) {
-                $provinces = $response->json()['rajaongkir']['results'] ?? [];
+                $provinces = $response->json()['data'] ?? [];
             }
         } catch (\Exception $e) {
             // Mocks if offline or API key invalid
             $provinces = [
-                ['province_id' => 9, 'province' => 'Jawa Barat'],
-                ['province_id' => 11, 'province' => 'Jawa Timur'],
-                ['province_id' => 10, 'province' => 'Jawa Tengah'],
-                ['province_id' => 6, 'province' => 'DKI Jakarta'],
-                ['province_id' => 5, 'province' => 'DI Yogyakarta'],
+                ['id' => 9, 'name' => 'Jawa Barat'],
+                ['id' => 11, 'name' => 'Jawa Timur'],
+                ['id' => 10, 'name' => 'Jawa Tengah'],
+                ['id' => 6, 'name' => 'DKI Jakarta'],
+                ['id' => 5, 'name' => 'DI Yogyakarta'],
             ];
         }
 
@@ -150,10 +151,11 @@ class AuthController extends Controller
         try {
             $response = Http::withHeaders([
                 'key' => $apiKey
-            ])->get("https://api.rajaongkir.com/starter/city?province={$province_id}");
+            ])->get("https://rajaongkir.komerce.id/api/v1/destination/city/{$province_id}");
 
             if ($response->successful()) {
-                return response()->json($response->json()['rajaongkir']['results'] ?? []);
+
+                return response()->json($response->json()['data'] ?? []);
             }
         } catch (\Exception $e) {}
 
