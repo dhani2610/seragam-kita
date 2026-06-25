@@ -86,7 +86,7 @@
                         <select id="ro_province" class="form-select" required>
                             <option value="">Pilih Provinsi Asal</option>
                             @foreach($provinces as $prov)
-                                <option value="{{ $prov['province_id'] }}">{{ $prov['province'] }}</option>
+                                <option value="{{ $prov['id'] }}">{{ $prov['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
